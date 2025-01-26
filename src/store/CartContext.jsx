@@ -4,13 +4,11 @@ import { createContext } from "react";
 export const CartContext = createContext({ cartItems: [] });
 
 function cartReducer(state, action) {
+  const existingItemIndex = state.cartItems.findIndex(
+    (cartItem) => cartItem.id === action.payload.id
+  );
   switch (action.type) {
     case "ADD_MEAL_TO_CART":
-      //   console.log(action.payload);
-      const existingItemIndex = state.cartItems.findIndex(
-        (cartItem) => cartItem.id === action.payload.id
-      );
-
       if (existingItemIndex > -1) {
         return {
           ...state,
@@ -29,8 +27,24 @@ function cartReducer(state, action) {
         ...state,
         cartItems: [...state.cartItems, { ...action.payload, quantity: 1 }],
       };
-    //   break;
+
     case "REMOVE_MEAL_FROM_CART":
+      if (
+        existingItemIndex > -1 &&
+        state.cartItems[existingItemIndex].quantity > 1
+      ) {
+        return {
+          ...state,
+          cartItems: state.cartItems.map((cartItem) =>
+            cartItem.id === action.payload.id
+              ? {
+                  ...cartItem,
+                  quantity: state.cartItems[existingItemIndex].quantity - 1,
+                }
+              : cartItem
+          ),
+        };
+      }
       return {
         ...state,
         cartItems: state.cartItems.filter(
