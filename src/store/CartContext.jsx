@@ -1,14 +1,19 @@
 import { useReducer } from "react";
 import { createContext } from "react";
 
-export const CartContext = createContext({ cartItems: [] });
+export const CartContext = createContext({
+  cartItems: [],
+  addMeal: () => {},
+  removeMeal: () => {},
+});
 
 function cartReducer(state, action) {
-  const existingItemIndex = state.cartItems.findIndex(
-    (cartItem) => cartItem.id === action.payload.id
-  );
+  let existingItemIndex;
   switch (action.type) {
     case "ADD_MEAL_TO_CART":
+      existingItemIndex = state.cartItems.findIndex(
+        (cartItem) => cartItem.id === action.payload.id
+      );
       if (existingItemIndex > -1) {
         return {
           ...state,
@@ -29,6 +34,9 @@ function cartReducer(state, action) {
       };
 
     case "REMOVE_MEAL_FROM_CART":
+      existingItemIndex = state.cartItems.findIndex(
+        (cartItem) => cartItem.id === action.payload
+      );
       if (
         existingItemIndex > -1 &&
         state.cartItems[existingItemIndex].quantity > 1
@@ -36,7 +44,7 @@ function cartReducer(state, action) {
         return {
           ...state,
           cartItems: state.cartItems.map((cartItem) =>
-            cartItem.id === action.payload.id
+            cartItem.id === action.payload
               ? {
                   ...cartItem,
                   quantity: state.cartItems[existingItemIndex].quantity - 1,
@@ -48,7 +56,7 @@ function cartReducer(state, action) {
       return {
         ...state,
         cartItems: state.cartItems.filter(
-          (cartItem) => cartItem.id !== action.payload.id
+          (cartItem) => cartItem.id !== action.payload
         ),
       };
 
@@ -61,7 +69,6 @@ export default function CartContextProvider({ children }) {
   const [cartState, dispatch] = useReducer(cartReducer, { cartItems: [] });
 
   const addMeal = (meal) => {
-    // console.log("in add meal action", meal);
     dispatch({ type: "ADD_MEAL_TO_CART", payload: meal });
   };
 
