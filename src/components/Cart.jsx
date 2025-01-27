@@ -8,7 +8,8 @@ import CartItem from "./CartItem.jsx";
 
 export default function Cart() {
   const { items } = useContext(CartContext);
-  const { currentStep, hideModal } = useContext(CurrentStepContext);
+  const { currentStep, hideModal, showCheckout } =
+    useContext(CurrentStepContext);
   const totalPrice = items.reduce(
     (sum, item) => (sum += item.quantity * item.price),
     0
@@ -26,7 +27,7 @@ export default function Cart() {
         <Button textOnly onClick={hideModal}>
           Close
         </Button>
-        <Button>Checkout</Button>
+        {items.length && <Button onClick={showCheckout}>Checkout</Button>}
       </p>
     </Modal>
   );

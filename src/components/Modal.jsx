@@ -1,7 +1,10 @@
-import { Children, useEffect, useRef } from "react";
+import { Children, useContext, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
+import { CurrentStepContext } from "../store/CurrentStepContext";
 
 export default function Modal({ children, open, cssClassName = "" }) {
+  const { currentStep, hideModal, showCheckout } =
+    useContext(CurrentStepContext);
   const dialogRef = useRef();
 
   useEffect(() => {
@@ -19,7 +22,11 @@ export default function Modal({ children, open, cssClassName = "" }) {
   }, [open]);
 
   return createPortal(
-    <dialog ref={dialogRef} className={`modal ${cssClassName}`}>
+    <dialog
+      ref={dialogRef}
+      className={`modal ${cssClassName}`}
+      onClose={currentStep === "cart" ? hideModal : null}
+    >
       {children}
     </dialog>,
     document.getElementById("modal")
